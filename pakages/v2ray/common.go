@@ -1,5 +1,5 @@
 package v2ray
 
-var Uris []string = []string{"vmess://sadsdsd"}
+var Uris []string
 var ActiveUri int
-var IsRun bool
+var IsRun bool = false

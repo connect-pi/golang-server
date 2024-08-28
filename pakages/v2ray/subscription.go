@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"project/pakages/configs"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ func LoadSubscription() error {
 	fmt.Println("Load subs...")
 
 	// Define the URL from which to fetch the response
-	url := "https://chita.chitnet.top/sub/c2FlZWQsMTcyNDYyMTE0MwSBCDBBpTn4"
+	url := configs.Settings.SubscriptionLink
 
 	// Make an HTTP GET request
 	resp, err := http.Get(url)

@@ -44,7 +44,7 @@ func vmessToJson(uri string) string {
 		"inbounds": []map[string]interface{}{
 			{
 				"listen":   "0.0.0.0",
-				"port":     2080,
+				"port":     2086,
 				"protocol": "socks",
 				"settings": map[string]interface{}{
 					"udp": true,
@@ -194,7 +194,7 @@ func vlessToJson(uri string) string {
 		"inbounds": []map[string]interface{}{
 			{
 				"listen":   "0.0.0.0",
-				"port":     2080,
+				"port":     2086,
 				"protocol": "socks",
 				"settings": map[string]interface{}{
 					"udp": true,

@@ -31,7 +31,7 @@ func OpenWithVpn(domain string) bool {
 	// Fix domain
 	domain = strings.Replace(domain, "http://", "", -1)
 	domain = strings.Replace(domain, "https://", "", -1)
-	domain = strings.Replace(domain, "/", "", -1)
+	domain = strings.Split(domain, "/")[0]
 	domain = strings.Split(domain, ":")[0]
 
 	fmt.Print("\ndomain: ", domain)

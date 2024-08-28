@@ -1,12 +1,10 @@
 package v2ray
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"syscall"
 	"time"
 )
@@ -71,64 +69,22 @@ func runV2Ray() error {
 	cmd := exec.Command("v2ray", "run")
 	cmd.Dir = ".v2rayConfig"
 
-	// Create a pipe to capture the command's output
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return fmt.Errorf("error creating pipe: %v", err)
-	}
-
 	// Start the command
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("error starting command: %v", err)
 	}
 
-	commands := ""
-	resultChan := make(chan bool)
-	errorChan := make(chan error)
+	time.Sleep(1 * time.Second)
 
-	// Read the command's output in a separate goroutine
-	go func() {
-		scanner := bufio.NewScanner(stdout)
-		for scanner.Scan() {
-			line := scanner.Text()
-			commands += line
-
-			// Check if the output contains the word "started"
-			if strings.Contains(line, "started") {
-				fmt.Println("✅ V2Ray started successfully.")
-				IsRun = true
-				resultChan <- true
-				return
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			errorChan <- fmt.Errorf("error reading output: %v", err)
-			return
-		}
-
-		// If we reach here, it means "started" was never found
-		resultChan <- false
-	}()
-
-	select {
-	case success := <-resultChan:
-		if success {
-			// V2Ray started successfully, return without waiting for the goroutine to finish
-			return nil
-		}
-	case err := <-errorChan:
-		// An error occurred while reading the output
-		StopV2Ray()
-		return err
-	case <-time.After(1 * time.Second):
-		// Timeout after 1 second, stop the goroutine and return an error
+	if TestSocks5Proxy("127.0.0.1:2085") {
+		fmt.Println("✅ V2Ray started successfully.")
+		IsRun = true
+	} else {
 		StopV2Ray()
 		return fmt.Errorf("V2Ray did not start within the expected time")
 	}
 
-	// If we reach here, return an error indicating failure to start
-	return fmt.Errorf("V2Ray did not start")
+	return nil
 }
 
 // Stop v2ray
