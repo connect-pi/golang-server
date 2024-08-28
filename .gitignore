@@ -26,3 +26,4 @@ go.work.sum
 
 # customs
 configs/*.json
+main
