@@ -1,0 +1,150 @@
+
+{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": 2080,
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": true,
+        "metadataOnly": false,
+        "routeOnly": true
+      },
+      "tag": "socks-in"
+    }
+  ],
+  "outbounds": [
+    {
+      "settings": {
+        "vnext": [
+          {
+            "port": 8081,
+            "users": [
+              {
+                "level": 8,
+                "id": "749c0a1f-bd52-4513-acb4-26c982ae32a1",
+                "security": "aes-128-gcm",
+                "alterId": 0,
+                "email": ""
+              }
+            ],
+            "address": "chita.chitnet.top"
+          }
+        ]
+      },
+      "mux": {
+        "enabled": false,
+        "concurrency": 50
+      },
+      "protocol": "vmess",
+      "tag": "proxy",
+      "streamSettings": {
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "type": "http",
+            "request": {
+              "path": [
+                "/"
+              ],
+              "version": "1.1",
+              "method": "GET",
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "User-Agent": [
+                  "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36",
+                  "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Pragma": [
+                  "no-cache"
+                ],
+                "Host": [
+                  "google.com"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "api": {
+    "services": [
+      "StatsService"
+    ],
+    "tag": "api"
+  },
+  "dns": {
+    "disableFallbackIfMatch": true,
+    "queryStrategy": "UseIP",
+    "disableCache": true,
+    "servers": [
+      {
+        "address": "8.8.8.8",
+        "skipFallback": false
+      }
+    ],
+    "tag": "dnsQuery",
+    "disableFallback": true
+  },
+  "stats": {},
+  "routing": {
+    "domainStrategy": "AsIs",
+    "balancers": [],
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "type": "field",
+        "outboundTag": "api"
+      },
+      {
+        "inboundTag": [
+          "inDns"
+        ],
+        "outboundTag": "outDns",
+        "type": "field"
+      },
+      {
+        "type": "field",
+        "inboundTag": [
+          "dnsQuery"
+        ],
+        "outboundTag": "proxy"
+      }
+    ]
+  },
+  "policy": {
+    "system": {
+      "statsOutboundUplink": true,
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true,
+      "statsOutboundDownlink": true
+    },
+    "levels": {
+      "8": {
+        "downlinkOnly": 1,
+        "statsUserDownlink": false,
+        "uplinkOnly": 1,
+        "handshake": 4,
+        "statsUserUplink": false,
+        "bufferSize": 0,
+        "connIdle": 30
+      }
+    }
+  },
+  "transport": {}
+}

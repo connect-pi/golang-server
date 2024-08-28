@@ -7,8 +7,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"project/pakages/proxy/checkIp"
-	"strings"
 	"time"
 
 	"golang.org/x/net/proxy"
@@ -169,66 +167,39 @@ func Start(address string) {
 	proxy := &http.Server{
 		Addr: address,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Time
+			// Start Time
 			startTime := time.Now()
 
-			var domain string = ""
-			var ip string = ""
+			// Check for open with vpn
+			openWithVpn := OpenWithVpn(r.RequestURI)
+			fmt.Print("\nvpn: ", openWithVpn)
 
-			// Get domain
-			domain = r.RequestURI
-			domain = strings.Replace(domain, "http://", "", -1)
-			domain = strings.Replace(domain, "https://", "", -1)
-			domain = strings.Replace(domain, "/", "", -1)
-			domain = strings.Split(domain, ":")[0]
-			fmt.Print("\ndomain: ", domain)
-
-			// Get IP
-			if domain == "localhost" {
-				ip = "127.0.0.1"
-			} else if IsValidDomain(domain) {
-				getedIp, ipErr := GetDomainIp(domain)
-
-				if ipErr != nil {
-					fmt.Print("\nGet ip error: ", ipErr)
-				} else {
-					ip = getedIp
-				}
-			} else { // For ips
-				ip = domain
-			}
-
-			fmt.Print("\nip: ", ip, "\n")
-
-			isIranIp := checkIp.IsIranIp(ip)
-			fmt.Print("isIranIp: ", isIranIp)
-
-			// Time
+			// End Time
 			elapsedTime := time.Since(startTime)
 			fmt.Printf("\n-- Program run time: %s\n", elapsedTime)
 
 			// Send
-			if isIranIp {
-				// Internet
-				if r.Method == http.MethodConnect {
-					handleInternetTunnel(w, r)
-				} else {
-					handleInternetHTTP(w, r)
-				}
-			} else {
+			if openWithVpn {
 				// Vpn
 				if r.Method == http.MethodConnect {
 					handleVpnTunnel(w, r)
 				} else {
 					handleVpnHTTP(w, r)
 				}
+			} else {
+				// Internet
+				if r.Method == http.MethodConnect {
+					handleInternetTunnel(w, r)
+				} else {
+					handleInternetHTTP(w, r)
+				}
 			}
 
 		}),
 	}
 
-	log.Printf("Starting proxy server on %s\n", address)
+	log.Printf("✅ Starting proxy server on %s\n", address)
 	if err := proxy.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("Could not start proxy: %v\n", err)
+		log.Fatalf("❌ Could not start proxy: %v\n", err)
 	}
 }
