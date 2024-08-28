@@ -25,5 +25,6 @@ go.work.sum
 .env
 
 # customs
-configs/*.json
+.configs/*.json
+.v2rayConfig/config.json
 main
