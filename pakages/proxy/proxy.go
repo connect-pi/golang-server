@@ -3,7 +3,6 @@ package proxy
 import (
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -198,8 +197,8 @@ func Start(address string) {
 		}),
 	}
 
-	log.Printf("✅ Starting proxy server on %s\n", address)
+	fmt.Println("✅ Starting proxy server on ", address)
 	if err := proxy.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("❌ Could not start proxy: %v\n", err)
+		fmt.Println("❌ Could not start proxy: ", err)
 	}
 }

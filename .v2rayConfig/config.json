@@ -1,0 +1,149 @@
+{
+  "api": {
+    "services": [
+      "StatsService"
+    ],
+    "tag": "api"
+  },
+  "dns": {
+    "disableCache": true,
+    "disableFallback": true,
+    "disableFallbackIfMatch": true,
+    "queryStrategy": "UseIP",
+    "servers": [
+      {
+        "address": "8.8.8.8",
+        "skipFallback": false
+      }
+    ],
+    "tag": "dnsQuery"
+  },
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": 2080,
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": true,
+        "metadataOnly": false,
+        "routeOnly": true
+      },
+      "tag": "socks-in"
+    }
+  ],
+  "outbounds": [
+    {
+      "mux": {
+        "concurrency": 50,
+        "enabled": false
+      },
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "chita.chitnet.top",
+            "port": 8081,
+            "users": [
+              {
+                "alterId": 0,
+                "email": "",
+                "id": "749c0a1f-bd52-4513-acb4-26c982ae32a1",
+                "level": 8,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "tcpSettings": {
+          "header": {
+            "request": {
+              "headers": {
+                "Accept-Encoding": [
+                  "gzip, deflate"
+                ],
+                "Connection": [
+                  "keep-alive"
+                ],
+                "Host": [
+                  "google.com"
+                ],
+                "Pragma": [
+                  "no-cache"
+                ],
+                "User-Agent": [
+                  "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36",
+                  "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"
+                ]
+              },
+              "method": "GET",
+              "path": [
+                "/"
+              ],
+              "version": "1.1"
+            },
+            "type": "http"
+          }
+        }
+      },
+      "tag": "proxy"
+    }
+  ],
+  "policy": {
+    "levels": {
+      "8": {
+        "bufferSize": 0,
+        "connIdle": 30,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "statsUserDownlink": false,
+        "statsUserUplink": false,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true,
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
+  },
+  "routing": {
+    "balancers": [],
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "inDns"
+        ],
+        "outboundTag": "outDns",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "dnsQuery"
+        ],
+        "outboundTag": "proxy",
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {},
+  "transport": {}
+}

@@ -160,7 +160,7 @@ func init() {
 	}
 
 	// Construct the full path to the JSON file
-	configPath := filepath.Join(filepath.Dir(path), "/golang-server/configs/custom-rules.json")
+	configPath := filepath.Join(filepath.Dir(path), "/golang-server/.configs/custom-rules.json")
 
 	// Open the JSON file
 	file, err := os.Open(configPath)

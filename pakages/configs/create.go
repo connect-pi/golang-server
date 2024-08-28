@@ -8,7 +8,7 @@ import (
 
 func CreateFiles() {
 	// Path to the configs directory
-	configDir := "configs"
+	configDir := ".configs"
 
 	// Check if the directory exists
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
