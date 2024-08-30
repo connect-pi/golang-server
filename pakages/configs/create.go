@@ -42,8 +42,6 @@ func CreateFiles() error {
 		}
 
 		fmt.Println("The custom-rules.json file was successfully created.")
-	} else {
-		fmt.Println("The custom-rules.json file already exists.")
 	}
 
 	// Path to the settings.json file
@@ -63,8 +61,6 @@ func CreateFiles() error {
 		}
 
 		fmt.Println("The settings.json file was successfully created.")
-	} else {
-		fmt.Println("The settings.json file already exists.")
 	}
 
 	return nil

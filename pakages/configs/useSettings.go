@@ -2,44 +2,32 @@ package configs
 
 import (
 	"encoding/json"
-	"sync"
 )
 
 type SettingOptions struct {
-	SubscriptionLink   string `json:"subscriptionLink"`
-	UpdateSubscription bool   `json:"updateSubsInTurnOn"`
+	SubscriptionLink   string `json:"SubscriptionLink"`
+	UpdateSubscription bool   `json:"UpdateSubscription"`
 }
 
 var (
 	Settings SettingOptions
-	loaded   bool
-	mu       sync.Mutex
 )
 
 func LoadSettings() error {
-	mu.Lock()
-	defer mu.Unlock()
-
-	// If the settings have already been loaded, return them immediately.
-	if loaded {
-		return nil
-	}
-
 	// Load the configuration from the file.
-	configStr, err := UseConfig("settings")
-	if err != nil {
-		return nil
+	configStr, UseConfigErr := UseConfig("settings")
+	if UseConfigErr != nil {
+		return UseConfigErr
 	}
 
 	// Parse the JSON configuration data into the SettingOptions struct.
 	var options SettingOptions
-	err = json.Unmarshal([]byte(configStr), &options)
-	if err != nil {
-		return nil
+	UnmarshalErr := json.Unmarshal([]byte(configStr), &options)
+	if UnmarshalErr != nil {
+		return UnmarshalErr
 	}
 
-	// Cache the loaded settings and mark them as loaded.
+	// Assign parsed settings to the global Settings variable.
 	Settings = options
-	loaded = true
 	return nil
 }

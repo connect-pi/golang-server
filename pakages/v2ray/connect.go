@@ -12,6 +12,7 @@ import (
 var cmd *exec.Cmd
 var stopChan = make(chan struct{}) // Channel to signal stopping
 
+// Connect
 func Connect(uriIndex int) error {
 	if IsRun {
 		// Stop
@@ -62,6 +63,7 @@ func selectUri(uriIndex int) error {
 	return nil
 }
 
+// Run v2ray
 func runV2Ray() error {
 	fmt.Println("Start V2Ray...")
 
@@ -76,7 +78,7 @@ func runV2Ray() error {
 
 	time.Sleep(1 * time.Second)
 
-	if TestSocks5Proxy("127.0.0.1:2085") {
+	if TestSocks5Proxy("127.0.0.1:2086") {
 		fmt.Println("✅ V2Ray started successfully.")
 		IsRun = true
 	} else {

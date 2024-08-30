@@ -4,22 +4,35 @@ import (
 	"fmt"
 	"project/pakages/configs"
 	"project/pakages/proxy"
+	"project/pakages/proxy/rules"
 	"project/pakages/v2ray"
 )
 
 func init() {
-	// Config files
-	configs.CreateFiles()
-	configs.LoadSettings()
+	err := configs.CreateFiles()
+	if err != nil {
+		fmt.Println("Create config files:", err)
+		return
+	}
+
+	err = configs.LoadSettings()
+	if err != nil {
+		fmt.Println("Load settings:", err)
+		return
+	}
+
+	err = rules.LoadCustomRules()
+	if err != nil {
+		fmt.Println("Load settings:", err)
+		return
+	}
 }
 
 func main() {
 	// Load Subscription
-	if configs.Settings.UpdateSubscription {
-		if LoadSubscriptionErr := v2ray.LoadSubscription(); LoadSubscriptionErr != nil {
-			fmt.Println(LoadSubscriptionErr)
-			return
-		}
+	if LoadSubscriptionErr := v2ray.LoadSubscription(); LoadSubscriptionErr != nil {
+		fmt.Println(LoadSubscriptionErr)
+		return
 	}
 
 	// V2ray Connect

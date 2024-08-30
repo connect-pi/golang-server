@@ -152,11 +152,11 @@ var DefaultRules = Rules{
 var combinedRules Rules
 
 // get custom rules on init
-func init() {
+func LoadCustomRules() error {
 	// Get the directory of the executable
 	path, err := os.Getwd()
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 
 	// Construct the full path to the JSON file
@@ -166,6 +166,7 @@ func init() {
 	file, err := os.Open(configPath)
 	if err != nil {
 		log.Fatalf("Error opening file '%s': %v", configPath, err)
+		return err
 	}
 	defer file.Close()
 
@@ -174,6 +175,7 @@ func init() {
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&rules); err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
+		return err
 	}
 
 	// Cache the rules data
@@ -190,4 +192,6 @@ func init() {
 			Off: append(CustomRules.IP.Off, DefaultRules.IP.Off...),
 		},
 	}
+
+	return nil
 }
