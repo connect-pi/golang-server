@@ -51,6 +51,7 @@ func (vp *V2RayProcess) Run() error {
 	// 	fmt.Println("✅ V2Ray started.")
 	// }
 
+	fmt.Println("✅ V2Ray started successfully.")
 	return nil
 }
 

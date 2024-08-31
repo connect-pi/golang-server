@@ -199,7 +199,7 @@ func Start(address string) {
 		}),
 	}
 
-	fmt.Println("✅ Starting proxy server on ", address)
+	fmt.Println("✨ Starting proxy server on ", address)
 	if err := proxy.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		fmt.Println("❌ Could not start proxy: ", err)
 	}
