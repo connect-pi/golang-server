@@ -13,7 +13,7 @@ func CreateJsonFiles() {
 	data := v2ray.Uris
 
 	// مسیر پوشه‌ای که فایل‌ها در آن قرار می‌گیرند
-	dirPath := ".v2rayConfig/testConfigs"
+	dirPath := ".v2ray/testConfigs"
 
 	// پاک کردن پوشه‌ی testing اگر وجود دارد
 	if err := os.RemoveAll(dirPath); err != nil {

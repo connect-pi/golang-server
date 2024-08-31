@@ -37,7 +37,7 @@ func Connect(uriIndex int) error {
 // Create uri config file
 func selectUri(uriIndex int) error {
 	// Define the directory and file path
-	dir := ".v2rayConfig"
+	dir := ".v2ray"
 	filePath := filepath.Join(dir, "config.json")
 
 	// Create the directory if it does not exist
@@ -69,7 +69,7 @@ func runV2Ray() error {
 
 	// Create the command
 	cmd := exec.Command("v2ray", "run")
-	cmd.Dir = ".v2rayConfig"
+	cmd.Dir = ".v2ray"
 
 	// Start the command
 	if err := cmd.Start(); err != nil {
