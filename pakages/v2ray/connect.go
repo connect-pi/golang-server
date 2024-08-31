@@ -22,7 +22,7 @@ func Connect(uriIndex int) error {
 
 	// Run
 	MainV2RayProcess = NewV2RayProcess(".v2ray", V2rayProxyPort)
-	if runErr := MainV2RayProcess.Run(); runErr != nil {
+	if runErr := MainV2RayProcess.Run(true); runErr != nil {
 		return runErr
 	}
 

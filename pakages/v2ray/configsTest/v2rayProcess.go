@@ -9,8 +9,8 @@ import (
 )
 
 func RunTestV2RayProcesses() int {
-	fmt.Println("\n-------------")
-	fmt.Println("Run test V2Ray processes...")
+	fmt.Println("\n-------------\n")
+	fmt.Println("Run test V2Ray processes...\n")
 
 	// Initialize a slice with a length equal to the number of URIs
 	testResult := make([]float64, len(v2ray.Uris))
@@ -31,31 +31,24 @@ func RunTestV2RayProcesses() int {
 			v2Process := v2ray.NewV2RayProcess(path, port)
 
 			// Start the V2Ray process
-			if err := v2Process.Run(); err != nil {
-				fmt.Printf("Failed to start V2Ray for config %d: %v\n", i, err)
+			if err := v2Process.Run(false); err != nil {
+				// fmt.Printf("Failed to start V2Ray for config %d: %v\n", i, err)
 				mu.Lock()
 				testResult[i] = 0
+				fmt.Printf("\nConfig %d: -Mb/s", i)
 				mu.Unlock()
 				return
 			}
 
 			// Test internet speed
-			speedMbps, err := v2ray.TestV2raySpeed(port)
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				mu.Lock()
-				testResult[i] = 0
-				mu.Unlock()
-			} else {
-				mu.Lock()
-				testResult[i] = speedMbps
-				mu.Unlock()
-			}
+			mu.Lock()
+			speed := v2ray.TestV2raySpeed(port)
+			testResult[i] = speed
+			fmt.Printf("Config %d: %.2fMb/s\n", i, testResult[i])
+			mu.Unlock()
 
 			// Stop the V2Ray process
-			if err := v2Process.Stop(); err != nil {
-				fmt.Printf("Failed to stop V2Ray for config %d: %v\n", i, err)
-			}
+			v2Process.Stop(false)
 		}(i)
 	}
 
@@ -72,10 +65,8 @@ func RunTestV2RayProcesses() int {
 		}
 	}
 
-	fmt.Printf("\nFastest speed: %.2f Mb/s\n", maxSpeed)
-	fmt.Printf("Index of fastest speed: %d\n", maxIndex)
-	fmt.Println("List: ", testResult)
-	fmt.Printf("\n-------------\n")
+	fmt.Printf("\n💥 Fastest speed: %.2f Mb/s\n", maxSpeed)
+	fmt.Printf("\n-------------\n\n")
 
 	return maxIndex
 }

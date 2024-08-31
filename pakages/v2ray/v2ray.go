@@ -26,8 +26,11 @@ func NewV2RayProcess(path string, port int) *V2RayProcess {
 }
 
 // Run V2Ray
-func (vp *V2RayProcess) Run() error {
-	fmt.Println("Start V2Ray...")
+func (vp *V2RayProcess) Run(prints bool) error {
+	if prints {
+		fmt.Println("Start V2Ray...")
+
+	}
 
 	// Set the working directory to the specified path
 	vp.Cmd.Dir = vp.Path
@@ -51,12 +54,15 @@ func (vp *V2RayProcess) Run() error {
 	// 	fmt.Println("✅ V2Ray started.")
 	// }
 
-	fmt.Println("✅ V2Ray started successfully.")
+	if prints {
+		fmt.Println("✅ V2Ray started successfully.")
+	}
+
 	return nil
 }
 
 // Stop V2Ray
-func (vp *V2RayProcess) Stop() error {
+func (vp *V2RayProcess) Stop(prints bool) error {
 	if vp.Cmd == nil || vp.Cmd.Process == nil {
 		return fmt.Errorf("no process to stop")
 	}
@@ -82,6 +88,8 @@ func (vp *V2RayProcess) Stop() error {
 	}
 
 	vp.IsRun = false
-	fmt.Println("💤 V2Ray stopped.")
+	if prints {
+		fmt.Println("💤 V2Ray stopped.")
+	}
 	return nil
 }
