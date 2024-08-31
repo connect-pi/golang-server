@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os/exec"
 	"syscall"
-	"time"
 )
 
 // V2RayProcess holds information about a V2Ray process
@@ -38,15 +37,19 @@ func (vp *V2RayProcess) Run() error {
 		return fmt.Errorf("error starting command: %v", err)
 	}
 
-	time.Sleep(1 * time.Second)
+	// if test {
+	// 	time.Sleep(1 * time.Second)
 
-	if TestV2rayProxy(vp.Port) {
-		fmt.Println("✅ V2Ray started successfully.")
-		vp.IsRun = true
-	} else {
-		vp.Stop()
-		return fmt.Errorf("V2Ray did not start within the expected time")
-	}
+	// 	if TestV2rayProxy(vp.Port) {
+	// 		fmt.Println("✅ V2Ray started successfully.")
+	// 		vp.IsRun = true
+	// 	} else {
+	// 		vp.Stop()
+	// 		return fmt.Errorf("V2Ray did not start within the expected time")
+	// 	}
+	// } else {
+	// 	fmt.Println("✅ V2Ray started.")
+	// }
 
 	return nil
 }

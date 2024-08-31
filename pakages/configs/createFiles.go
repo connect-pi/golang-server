@@ -50,8 +50,7 @@ func CreateFiles() error {
 		// JSON content to be written to the file
 		settingjsonData := `
 {
-      "SubscriptionLink": "",
-      "UpdateSubscription": true
+      "SubscriptionLink": ""
 }`
 
 		// Write the JSON content to the file

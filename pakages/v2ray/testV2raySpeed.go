@@ -11,17 +11,17 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-// تست سرعت اینترنت از طریق پروکسی SOCKS5 با محدودیت زمانی
+// TestV2raySpeed tests the internet speed through a SOCKS5 proxy with a time limit
 func TestV2raySpeed(proxyPort int) (float64, error) {
 	fmt.Println("Connect to: SOCKS5", "127.0.0.1:"+strconv.Itoa(proxyPort))
 
-	// تنظیم پروکسی SOCKS5
+	// Set up the SOCKS5 proxy
 	dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:"+strconv.Itoa(proxyPort), nil, proxy.Direct)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create SOCKS5 dialer: %v", err)
 	}
 
-	// تنظیم کلاینت HTTP با پروکسی SOCKS5
+	// Set up the HTTP client with the SOCKS5 proxy
 	transport := &http.Transport{
 		Dial: dialer.Dial,
 	}
@@ -30,33 +30,34 @@ func TestV2raySpeed(proxyPort int) (float64, error) {
 		Transport: transport,
 	}
 
-	// ایجاد کانتکست با محدودیت زمانی
+	// Create a context with a time limit
 	ctx, cancel := context.WithTimeout(context.Background(), 1300*time.Millisecond)
 	defer cancel()
 
-	// ایجاد درخواست با کانتکست
+	// Create a request with the context
 	req, err := http.NewRequestWithContext(ctx, "GET", "https://raw.githubusercontent.com/BitDoctor/speed-test-file/master/5mb.txt", nil)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create HTTP request: %v", err)
 	}
 
-	// ارسال درخواست HTTP برای تست سرعت
+	// Send the HTTP request for the speed test
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, fmt.Errorf("failed to send HTTP request: %v", err)
 	}
 	defer resp.Body.Close()
 
-	// خواندن داده‌ها در مدت زمان ۱ ثانیه
+	// Read the data within the 1-second time frame
 	start := time.Now()
 	var totalBytesRead int64
-	buf := make([]byte, 8192) // بافر 8 کیلوبایتی
+	buf := make([]byte, 8192) // 8 KB buffer
 
 	for {
 		select {
-		case <-ctx.Done(): // اگر زمان تمام شد
+		case <-ctx.Done(): // If the time is up
 			duration := time.Since(start)
-			speedMbps := float64(totalBytesRead) / duration.Seconds() / (1024 * 1024) // سرعت بر حسب مگابیت بر ثانیه
+			// Convert bytes to bits and then to megabits
+			speedMbps := float64(totalBytesRead*8) / duration.Seconds() / 1_000_000 // speed in Mbps
 			return speedMbps, nil
 		default:
 			n, err := resp.Body.Read(buf)
@@ -70,9 +71,9 @@ func TestV2raySpeed(proxyPort int) (float64, error) {
 		}
 	}
 
-	// در صورتی که حلقه به پایان برسد
+	// Calculate speed if the loop ends naturally
 	duration := time.Since(start)
-	speedMbps := float64(totalBytesRead) / duration.Seconds() / (1024 * 1024) // سرعت بر حسب مگابیت بر ثانیه
+	speedMbps := float64(totalBytesRead*8) / duration.Seconds() / 1_000_000 // speed in Mbps
 
 	return speedMbps, nil
 }

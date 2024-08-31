@@ -5,8 +5,7 @@ import (
 )
 
 type SettingOptions struct {
-	SubscriptionLink   string `json:"SubscriptionLink"`
-	UpdateSubscription bool   `json:"UpdateSubscription"`
+	SubscriptionLink string `json:"SubscriptionLink"`
 }
 
 var (

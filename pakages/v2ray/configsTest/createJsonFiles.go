@@ -8,62 +8,64 @@ import (
 	"project/pakages/v2ray"
 )
 
-// مسیر پوشه‌ای که فایل‌ها در آن قرار می‌گیرند
+// Directory path where the files will be placed
 var DirPath = ".v2ray/testConfigs"
 
+// Create JSON files based on the provided data
 func CreateJsonFiles() {
+	// Remove the existing test directory if it exists
 	RemoveTestsDir()
 
-	// آرایه‌ای از رشته‌ها به عنوان ورودی
+	// Array of strings as input
 	data := v2ray.Uris
 
-	// ایجاد مجدد پوشه
+	// Recreate the directory
 	if err := os.MkdirAll(DirPath, os.ModePerm); err != nil {
 		fmt.Println("Error creating directory:", err)
 		return
 	}
 
-	// برای هر آیتم در آرایه، یک پوشه و فایل JSON ایجاد کنید
+	// For each item in the array, create a folder and a JSON file
 	for i, item := range data {
-		// ایجاد پوشه با نام ایندکس
+		// Create a subdirectory with the index as the name
 		subDirPath := filepath.Join(DirPath, fmt.Sprintf("%d", i))
 		if err := os.MkdirAll(subDirPath, os.ModePerm); err != nil {
 			fmt.Println("Error creating subdirectory:", err)
 			continue
 		}
 
-		// نام فایل JSON
+		// JSON file name
 		fileName := filepath.Join(subDirPath, "config.json")
 
-		// محتوای JSON را ایجاد کنید
+		// Generate JSON content
 		jsonData := v2ray.UriToJson(item, 3281+i)
 
-		// فایل را باز کنید یا ایجاد کنید
+		// Open or create the file
 		file, err := os.Create(fileName)
 		if err != nil {
 			fmt.Println("Error creating file:", err)
 			continue
 		}
 
-		// نوشتن محتوای JSON به فایل
+		// Write JSON content to the file
 		if _, err := io.WriteString(file, jsonData); err != nil {
 			fmt.Println("Error writing to file:", err)
 			file.Close()
 			continue
 		}
 
-		// بسته کردن فایل بعد از نوشتن
+		// Close the file after writing
 		if err := file.Close(); err != nil {
 			fmt.Println("Error closing file:", err)
 			continue
 		}
 	}
 
-	fmt.Println("Test json files created!")
+	fmt.Println("Test JSON files created!")
 }
 
+// Remove the testing directory if it exists
 func RemoveTestsDir() {
-	// پاک کردن پوشه‌ی testing اگر وجود دارد
 	if err := os.RemoveAll(DirPath); err != nil {
 		fmt.Println("Error removing directory:", err)
 		return
