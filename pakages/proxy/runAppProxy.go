@@ -174,7 +174,7 @@ func Start(address string) {
 			startTime := time.Now()
 
 			// Check for open with vpn
-			openWithVpn := OpenWithVpn(r.RequestURI)
+			openWithVpn := OpenWithVpnOrNot(r.RequestURI)
 			fmt.Print("\nvpn: ", openWithVpn)
 
 			// End Time

@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-func TestSocks5Proxy(proxyAddr string) bool {
+func TestV2rayProxy(proxyAddr string) bool {
 	// Create a new SOCKS5 proxy dialer
 	dialer, err := proxy.SOCKS5("tcp", proxyAddr, nil, proxy.Direct)
 	if err != nil {

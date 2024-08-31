@@ -27,7 +27,7 @@ func SetCache(domain string, result bool) {
 }
 
 // Check for open with vpn
-func OpenWithVpn(domain string) bool {
+func OpenWithVpnOrNot(domain string) bool {
 	// Fix domain
 	domain = strings.Replace(domain, "http://", "", -1)
 	domain = strings.Replace(domain, "https://", "", -1)

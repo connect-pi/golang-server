@@ -54,7 +54,7 @@ func selectUri(uriIndex int) error {
 	defer file.Close()
 
 	// Write the content to the file
-	_, err = file.WriteString(UriToJson(Uris[uriIndex]))
+	_, err = file.WriteString(UriToJson(Uris[uriIndex], ProxyPort))
 	if err != nil {
 		return fmt.Errorf("error writing to file: %v", err)
 	}
@@ -78,7 +78,7 @@ func runV2Ray() error {
 
 	time.Sleep(1 * time.Second)
 
-	if TestSocks5Proxy("127.0.0.1:2086") {
+	if TestV2rayProxy("127.0.0.1:2086") {
 		fmt.Println("✅ V2Ray started successfully.")
 		IsRun = true
 	} else {

@@ -8,20 +8,24 @@ import (
 	"strings"
 )
 
-func UriToJson(uri string) string {
+func UriToJson(uri string, proxyPort int) string {
+	if proxyPort == 0 {
+		proxyPort = ProxyPort
+	}
+
 	if strings.Contains(uri, "vmess://") {
-		return vmessToJson(uri)
+		return vmessToJson(uri, proxyPort)
 	}
 
 	if strings.Contains(uri, "vless://") {
-		return vlessToJson(uri)
+		return vlessToJson(uri, proxyPort)
 	}
 
 	return ""
 }
 
 // Vmess
-func vmessToJson(uri string) string {
+func vmessToJson(uri string, proxyPort int) string {
 	// Step 1: Remove the URI scheme (e.g., "vmess://")
 	base64EncodedString := strings.Split(uri, "://")[1]
 
@@ -44,7 +48,7 @@ func vmessToJson(uri string) string {
 		"inbounds": []map[string]interface{}{
 			{
 				"listen":   "0.0.0.0",
-				"port":     2086,
+				"port":     proxyPort,
 				"protocol": "socks",
 				"settings": map[string]interface{}{
 					"udp": true,
@@ -177,7 +181,7 @@ func vmessToJson(uri string) string {
 }
 
 // Vless
-func vlessToJson(uri string) string {
+func vlessToJson(uri string, proxyPort int) string {
 	parsedURL, err := url.Parse(uri)
 	if err != nil {
 		return ""
@@ -194,7 +198,7 @@ func vlessToJson(uri string) string {
 		"inbounds": []map[string]interface{}{
 			{
 				"listen":   "0.0.0.0",
-				"port":     2086,
+				"port":     proxyPort,
 				"protocol": "socks",
 				"settings": map[string]interface{}{
 					"udp": true,

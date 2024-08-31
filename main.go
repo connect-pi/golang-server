@@ -43,4 +43,5 @@ func main() {
 
 	// Create proxy
 	proxy.Start(":1080")
+	// configsTest.CreateJsonFiles()
 }
