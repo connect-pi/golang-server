@@ -7,17 +7,15 @@ import (
 	"net/http"
 	"net/url"
 	"project/pakages/v2ray"
+	"strconv"
 	"time"
 
 	"golang.org/x/net/proxy"
 )
 
-// SOCKS5 proxy settings
-var socks5ProxyAddr = "socks5://0.0.0.0:2086"
-
 // getSocks5Dialer returns a dialer that connects through the SOCKS5 proxy
 func getSocks5Dialer() (proxy.Dialer, error) {
-	u, err := url.Parse(socks5ProxyAddr)
+	u, err := url.Parse("socks5://0.0.0.0:" + strconv.Itoa(v2ray.V2rayProxyPort))
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +166,7 @@ func Start(address string) {
 		Addr: address,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			fmt.Print("\nV2ray Status: ", v2ray.IsRun)
+			fmt.Print("\nV2ray Status: ", v2ray.MainV2RayProcess.IsRun)
 
 			// Start Time
 			startTime := time.Now()

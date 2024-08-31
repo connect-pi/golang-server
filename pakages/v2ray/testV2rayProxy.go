@@ -2,14 +2,15 @@ package v2ray
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"golang.org/x/net/proxy"
 )
 
-func TestV2rayProxy(proxyAddr string) bool {
+func TestV2rayProxy(proxyPort int) bool {
 	// Create a new SOCKS5 proxy dialer
-	dialer, err := proxy.SOCKS5("tcp", proxyAddr, nil, proxy.Direct)
+	dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:"+strconv.Itoa(proxyPort), nil, proxy.Direct)
 	if err != nil {
 		fmt.Println("Error creating SOCKS5 dialer:", err)
 		return false

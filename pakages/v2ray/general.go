@@ -1,6 +1,6 @@
 package v2ray
 
-var ProxyPort = 2086
+var MainV2RayProcess *V2RayProcess
+var V2rayProxyPort = 2087
 var Uris []string
 var ActiveUri int
-var IsRun bool = false

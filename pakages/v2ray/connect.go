@@ -3,23 +3,17 @@ package v2ray
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"syscall"
-	"time"
 )
-
-var cmd *exec.Cmd
-var stopChan = make(chan struct{}) // Channel to signal stopping
 
 // Connect
 func Connect(uriIndex int) error {
-	if IsRun {
-		// Stop
-		if stopErr := StopV2Ray(); stopErr != nil {
-			return stopErr
-		}
-	}
+	// if MainV2RayProcess.IsRun {
+	// 	// Stop
+	// 	if stopErr := MainV2RayProcess.Stop(); stopErr != nil {
+	// 		return stopErr
+	// 	}
+	// }
 
 	// Select
 	if selectErr := selectUri(uriIndex); selectErr != nil {
@@ -27,7 +21,8 @@ func Connect(uriIndex int) error {
 	}
 
 	// Run
-	if runErr := runV2Ray(); runErr != nil {
+	MainV2RayProcess = NewV2RayProcess(".v2ray")
+	if runErr := MainV2RayProcess.Run(); runErr != nil {
 		return runErr
 	}
 
@@ -54,68 +49,11 @@ func selectUri(uriIndex int) error {
 	defer file.Close()
 
 	// Write the content to the file
-	_, err = file.WriteString(UriToJson(Uris[uriIndex], ProxyPort))
+	_, err = file.WriteString(UriToJson(Uris[uriIndex], V2rayProxyPort))
 	if err != nil {
 		return fmt.Errorf("error writing to file: %v", err)
 	}
 
 	ActiveUri = uriIndex
-	return nil
-}
-
-// Run v2ray
-func runV2Ray() error {
-	fmt.Println("Start V2Ray...")
-
-	// Create the command
-	cmd := exec.Command("v2ray", "run")
-	cmd.Dir = ".v2ray"
-
-	// Start the command
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("error starting command: %v", err)
-	}
-
-	time.Sleep(1 * time.Second)
-
-	if TestV2rayProxy("127.0.0.1:2086") {
-		fmt.Println("✅ V2Ray started successfully.")
-		IsRun = true
-	} else {
-		StopV2Ray()
-		return fmt.Errorf("V2Ray did not start within the expected time")
-	}
-
-	return nil
-}
-
-// Stop v2ray
-func StopV2Ray() error {
-	if cmd == nil || cmd.Process == nil {
-		return fmt.Errorf("no process to stop")
-	}
-
-	// Send a signal to stop the process
-	if err := cmd.Process.Signal(syscall.SIGINT); err != nil {
-		return fmt.Errorf("error sending stop signal: %v", err)
-	}
-
-	// Wait for the process to finish
-	done := make(chan error)
-	go func() {
-		done <- cmd.Wait()
-	}()
-
-	select {
-	case <-stopChan:
-		// Stop signal received
-	case err := <-done:
-		if err != nil {
-			return fmt.Errorf("process stopped with error: %v", err)
-		}
-	}
-
-	IsRun = false
-	fmt.Println("💤 V2Ray stopped.")
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 
 func UriToJson(uri string, proxyPort int) string {
 	if proxyPort == 0 {
-		proxyPort = ProxyPort
+		proxyPort = V2rayProxyPort
 	}
 
 	if strings.Contains(uri, "vmess://") {
