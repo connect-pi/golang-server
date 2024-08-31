@@ -13,14 +13,16 @@ type V2RayProcess struct {
 	IsRun  bool
 	StopCh chan struct{}
 	Path   string
+	Port   int
 }
 
 // NewV2RayProcess creates a new V2Ray process with a given path
-func NewV2RayProcess(path string) *V2RayProcess {
+func NewV2RayProcess(path string, port int) *V2RayProcess {
 	return &V2RayProcess{
 		Cmd:    exec.Command("v2ray", "run"),
 		StopCh: make(chan struct{}),
 		Path:   path,
+		Port:   port,
 	}
 }
 
@@ -38,7 +40,7 @@ func (vp *V2RayProcess) Run() error {
 
 	time.Sleep(1 * time.Second)
 
-	if TestV2rayProxy(V2rayProxyPort) {
+	if TestV2rayProxy(vp.Port) {
 		fmt.Println("✅ V2Ray started successfully.")
 		vp.IsRun = true
 	} else {

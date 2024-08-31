@@ -8,21 +8,17 @@ import (
 	"project/pakages/v2ray"
 )
 
+// مسیر پوشه‌ای که فایل‌ها در آن قرار می‌گیرند
+var DirPath = ".v2ray/testConfigs"
+
 func CreateJsonFiles() {
+	RemoveTestsDir()
+
 	// آرایه‌ای از رشته‌ها به عنوان ورودی
 	data := v2ray.Uris
 
-	// مسیر پوشه‌ای که فایل‌ها در آن قرار می‌گیرند
-	dirPath := ".v2ray/testConfigs"
-
-	// پاک کردن پوشه‌ی testing اگر وجود دارد
-	if err := os.RemoveAll(dirPath); err != nil {
-		fmt.Println("Error removing directory:", err)
-		return
-	}
-
 	// ایجاد مجدد پوشه
-	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(DirPath, os.ModePerm); err != nil {
 		fmt.Println("Error creating directory:", err)
 		return
 	}
@@ -30,7 +26,7 @@ func CreateJsonFiles() {
 	// برای هر آیتم در آرایه، یک پوشه و فایل JSON ایجاد کنید
 	for i, item := range data {
 		// ایجاد پوشه با نام ایندکس
-		subDirPath := filepath.Join(dirPath, fmt.Sprintf("%d", i))
+		subDirPath := filepath.Join(DirPath, fmt.Sprintf("%d", i))
 		if err := os.MkdirAll(subDirPath, os.ModePerm); err != nil {
 			fmt.Println("Error creating subdirectory:", err)
 			continue
@@ -61,7 +57,15 @@ func CreateJsonFiles() {
 			fmt.Println("Error closing file:", err)
 			continue
 		}
+	}
 
-		fmt.Println("Created file:", fileName)
+	fmt.Println("Test json files created!")
+}
+
+func RemoveTestsDir() {
+	// پاک کردن پوشه‌ی testing اگر وجود دارد
+	if err := os.RemoveAll(DirPath); err != nil {
+		fmt.Println("Error removing directory:", err)
+		return
 	}
 }

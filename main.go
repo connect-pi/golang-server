@@ -6,6 +6,7 @@ import (
 	"project/pakages/proxy"
 	"project/pakages/proxy/rules"
 	"project/pakages/v2ray"
+	"project/pakages/v2ray/configsTest"
 )
 
 func init() {
@@ -35,13 +36,15 @@ func main() {
 		return
 	}
 
+	// Find best config
+	bestConfigIndex := configsTest.Run()
+
 	// V2ray Connect
-	if connectErr := v2ray.Connect(0); connectErr != nil {
+	if connectErr := v2ray.Connect(bestConfigIndex); connectErr != nil {
 		fmt.Println(connectErr)
 		return
 	}
 
 	// Create proxy
 	proxy.Start(":1080")
-	// configsTest.CreateJsonFiles()
 }
