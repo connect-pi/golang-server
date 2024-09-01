@@ -6,11 +6,12 @@ import (
 	"project/pakages/v2ray"
 	"strconv"
 	"sync"
+	"time"
 )
 
 func RunTestV2RayProcesses() int {
-	fmt.Println("\n-------------\n")
-	fmt.Println("Run test V2Ray processes...\n")
+	fmt.Printf("\n-------------------------------\n")
+	fmt.Printf("💥 Test config speeds...\n\n")
 
 	// Initialize a slice with a length equal to the number of URIs
 	testResult := make([]float64, len(v2ray.Uris))
@@ -35,16 +36,18 @@ func RunTestV2RayProcesses() int {
 				// fmt.Printf("Failed to start V2Ray for config %d: %v\n", i, err)
 				mu.Lock()
 				testResult[i] = 0
-				fmt.Printf("\nConfig %d: -Mb/s", i)
+				fmt.Printf("\nConfig %d: -ms", i)
 				mu.Unlock()
 				return
 			}
 
 			// Test internet speed
 			mu.Lock()
-			speed := v2ray.TestV2raySpeed(port)
+			time.Sleep(50 * time.Millisecond)
+			// speed := v2ray.TestV2raySpeed(port)
+			speed := v2ray.TestV2rayPing(port)
 			testResult[i] = speed
-			fmt.Printf("Config %d: %.2fMb/s\n", i, testResult[i])
+			fmt.Printf("Config %d: %.0fms\n", i, testResult[i])
 			mu.Unlock()
 
 			// Stop the V2Ray process
@@ -56,17 +59,17 @@ func RunTestV2RayProcesses() int {
 	wg.Wait()
 
 	// Determine the maximum speed and its index
-	maxSpeed := testResult[0]
+	maxSpeed := 999999.0
 	maxIndex := 0
 	for i, speed := range testResult {
-		if speed > maxSpeed {
+		if speed != 0 && speed < maxSpeed {
 			maxSpeed = speed
 			maxIndex = i
 		}
 	}
 
-	fmt.Printf("\n💥 Fastest speed: %.2f Mb/s\n", maxSpeed)
-	fmt.Printf("\n-------------\n\n")
+	fmt.Printf("\n🥇 Fastest speed: %.0fms", maxSpeed)
+	fmt.Printf("\n-------------------------------\n\n")
 
 	return maxIndex
 }

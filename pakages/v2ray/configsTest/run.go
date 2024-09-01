@@ -3,6 +3,6 @@ package configsTest
 func Run() int {
 	CreateJsonFiles()
 	TestV2Ray := RunTestV2RayProcesses()
-	RemoveTestsDir()
+	// RemoveTestsDir()
 	return TestV2Ray
 }
