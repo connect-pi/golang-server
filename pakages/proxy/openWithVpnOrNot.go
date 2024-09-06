@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"fmt"
-	"net"
 	"project/pakages/common"
 	"project/pakages/proxy/rules"
 	"strings"
@@ -48,36 +47,38 @@ func OpenWithVpnOrNot(url string) bool {
 		// }
 		// fmt.Print("\niran Ipv6: ", common.IsIranIpv6(url))
 
-		ipObj := net.ParseIP(url)
-		if ipObj == nil {
-			fmt.Printf("\nInvalid IPv6 address\n")
-			SetCache(url, true)
-			return true
-		}
+		// ipObj := net.ParseIP(url)
+		// if ipObj == nil {
+		// 	fmt.Printf("\nInvalid IPv6 address\n")
+		// 	SetCache(url, true)
+		// 	return true
+		// }
 
-		if ipv4 := ipObj.To4(); ipv4 != nil {
-			fmt.Printf("\nConverted IPv6 %s to IPv4: %s\n", ipObj.String(), ipv4.String())
-			url = ipv4.String() // Use the converted IPv4 address
-		} else {
-			// If it's an IPv6 and cannot be converted, return true
-			fmt.Printf("\nCould not convert IPv6 to IPv4")
-			SetCache(url, true)
-			return true
-		}
+		// if ipv4 := ipObj.To4(); ipv4 != nil {
+		// 	fmt.Printf("\nConverted IPv6 %s to IPv4: %s\n", ipObj.String(), ipv4.String())
+		// 	url = ipv4.String() // Use the converted IPv4 address
+		// } else {
+		// 	// If it's an IPv6 and cannot be converted, return true
+		// 	fmt.Printf("\nCould not convert IPv6 to IPv4")
+		// 	SetCache(url, true)
+		// 	return true
+		// }
+
+		return false
 	}
 
 	// Fix url
 	if common.IsIPv4(url) {
 		// Ipv4
 		url = strings.Split(url, ":")[0]
-		fmt.Print("\nCleaned ipv4:", url)
+		fmt.Print("\nCleaned ipv4: ", url)
 	} else {
 		// Domain
 		url = strings.Replace(url, "http://", "", -1)
 		url = strings.Replace(url, "https://", "", -1)
 		url = strings.Split(url, "/")[0]
 		url = strings.Split(url, ":")[0]
-		fmt.Print("\nCleaned Domain:", url)
+		fmt.Print("\nCleaned Domain: ", url)
 	}
 
 	// Check the cache first
