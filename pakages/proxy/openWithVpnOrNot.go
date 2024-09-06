@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"fmt"
+	"net"
 	"project/pakages/common"
 	"project/pakages/proxy/rules"
 	"strings"
@@ -26,65 +27,111 @@ func SetCache(domain string, result bool) {
 	cache.domainCache[domain] = result
 }
 
-// Check for open with vpn
-func OpenWithVpnOrNot(domain string) bool {
-	// Fix domain
-	domain = strings.Replace(domain, "http://", "", -1)
-	domain = strings.Replace(domain, "https://", "", -1)
-	domain = strings.Split(domain, "/")[0]
-	domain = strings.Split(domain, ":")[0]
+// Check for open with VPN
+func OpenWithVpnOrNot(url string) bool {
+	fmt.Print("\ndomain: ", url)
 
-	fmt.Print("\ndomain: ", domain)
+	// Remove IPv6 port information if present
+	url = strings.Split(url, "]:")[0]
+	url = strings.Replace(url, "[", "", -1)
+	isIpv6 := common.IsIPv6(url)
 
-	// Check cache
+	// Convert IPv6 to IPv4 if necessary
+	if isIpv6 {
+		fmt.Print("\nis Ipv6: ", url)
+
+		// Is iran ipv6
+		// IsIranIpv6 := common.IsIranIpv6(url)
+		// if IsIranIpv6 {
+		// 	SetCache(url, true)
+		// 	return true
+		// }
+		// fmt.Print("\niran Ipv6: ", common.IsIranIpv6(url))
+
+		ipObj := net.ParseIP(url)
+		if ipObj == nil {
+			fmt.Printf("\nInvalid IPv6 address\n")
+			SetCache(url, true)
+			return true
+		}
+
+		if ipv4 := ipObj.To4(); ipv4 != nil {
+			fmt.Printf("\nConverted IPv6 %s to IPv4: %s\n", ipObj.String(), ipv4.String())
+			url = ipv4.String() // Use the converted IPv4 address
+		} else {
+			// If it's an IPv6 and cannot be converted, return true
+			fmt.Printf("\nCould not convert IPv6 to IPv4")
+			SetCache(url, true)
+			return true
+		}
+	}
+
+	// Fix url
+	if common.IsIPv4(url) {
+		// Ipv4
+		url = strings.Split(url, ":")[0]
+		fmt.Print("\nCleaned ipv4:", url)
+	} else {
+		// Domain
+		url = strings.Replace(url, "http://", "", -1)
+		url = strings.Replace(url, "https://", "", -1)
+		url = strings.Split(url, "/")[0]
+		url = strings.Split(url, ":")[0]
+		fmt.Print("\nCleaned Domain:", url)
+	}
+
+	// Check the cache first
 	cache.mu.RLock()
-	if cachedResult, found := cache.domainCache[domain]; found {
+	if cachedResult, found := cache.domainCache[url]; found {
 		cache.mu.RUnlock()
 		fmt.Print("\nCache hit: ", cachedResult)
 		return cachedResult
 	}
 	cache.mu.RUnlock()
 
-	// Check domain rules
-	rulesForDomain := rules.CheckRulesForDomain(domain)
-	if rulesForDomain != nil {
-		fmt.Print("\nrulesForDomain: ", *rulesForDomain)
-		SetCache(domain, *rulesForDomain)
-		return *rulesForDomain
+	// Check if the domain is valid
+	isDomain := common.IsValidDomain(url)
+	if isDomain {
+		// Apply domain-specific rules
+		rulesForDomain := rules.CheckRulesForDomain(url)
+		if rulesForDomain != nil {
+			fmt.Print("\nRules for domain found: ", *rulesForDomain)
+			SetCache(url, *rulesForDomain)
+			return *rulesForDomain
+		}
+
+		// Check if it's an Iranian or local domain
+		if strings.Contains(url, ".ir") || strings.Contains(url, ".local") {
+			SetCache(url, false)
+			return false
+		}
+
+		// Fetch the domain's IP address
+		thisIp, ipErr := common.GetDomainIp(url)
+		if ipErr != nil {
+			fmt.Print("\nError fetching IP: ", ipErr)
+			SetCache(url, false)
+			return false
+		}
+		url = thisIp
 	}
 
-	// Validate domain
-	if !common.IsValidDomain(domain) {
-		SetCache(domain, false)
-		return false
+	// Ipv4
+	if common.IsIPv4(url) {
+		// Apply IP-specific rules
+		rulesForIp := rules.CheckRulesForIp(url)
+		if rulesForIp != nil {
+			fmt.Print("\nRules for IP found: ", *rulesForIp)
+			SetCache(url, *rulesForIp)
+			return *rulesForIp
+		}
+
+		// Check if the IP belongs to Iran
+		IsIranIp := common.IsIranIp(url)
+		SetCache(url, !IsIranIp)
+		return !IsIranIp
 	}
 
-	// Check .ir/local domains
-	if strings.Contains(domain, ".ir") || strings.Contains(domain, ".local") {
-		SetCache(domain, false)
-		return false
-	}
+	return true
 
-	// Check iran ip
-	ip, ipErr := common.GetDomainIp(domain)
-	if ipErr != nil {
-		fmt.Print("\nGet ip error: ", ipErr, "\n")
-		SetCache(domain, false)
-		return false
-	}
-
-	// Check ip rules
-	rulesForIp := rules.CheckRulesForIp(ip)
-	if rulesForIp != nil {
-		fmt.Print("\nrulesForIp: ", *rulesForIp)
-		SetCache(domain, *rulesForIp)
-		return *rulesForIp
-	}
-
-	fmt.Print("\nip: ", ip)
-
-	isNotIranIp := !common.IsIranIp(ip)
-	SetCache(domain, isNotIranIp)
-
-	return isNotIranIp
 }

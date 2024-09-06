@@ -165,8 +165,9 @@ func Start(address string) {
 	proxy := &http.Server{
 		Addr: address,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 			fmt.Print("\nV2ray Status: ", v2ray.MainV2RayProcess.IsRun)
+			// fmt.Print("\n Header: ", r.URL)
+			// fmt.Printf("%+v\n", r)
 
 			// Start Time
 			startTime := time.Now()
@@ -177,7 +178,7 @@ func Start(address string) {
 
 			// End Time
 			elapsedTime := time.Since(startTime)
-			fmt.Printf("\n-- Program run time: %s\n", elapsedTime)
+			fmt.Printf("\n👾 Program run time: %s\n", elapsedTime)
 
 			// Send
 			if openWithVpn {
