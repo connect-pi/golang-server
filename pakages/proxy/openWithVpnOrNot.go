@@ -64,7 +64,8 @@ func OpenWithVpnOrNot(url string) bool {
 		// 	return true
 		// }
 
-		return false
+		SetCache(url, true)
+		return true
 	}
 
 	// Fix url
