@@ -53,5 +53,5 @@ func StartTcpProxy() {
 	// Start the TCP server
 	log.Printf("Start the TCP...")
 
-	startTCPServer(":9999", proxyURL) // Change the listening address and port as needed
+	startTCPServer(":9998", proxyURL) // Change the listening address and port as needed
 }
