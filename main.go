@@ -56,10 +56,8 @@ func main() {
  ░▒▓██████▓▒░ ░▒▓██████▓▒░
  `)
 
-	// Run TCP proxy in the background
-	go proxy.StartTcpProxy()
+	// proxy.StartAppHttpProxy(":1080")
 
 	// Create proxy
-	proxy.Start(":1080")
-
+	proxy.StartAppSocks5Proxy()
 }

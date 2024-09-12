@@ -43,11 +43,22 @@ func RunTestV2RayProcesses() int {
 
 			// Test internet speed
 			mu.Lock()
-			time.Sleep(50 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 			// speed := v2ray.TestV2raySpeed(port)
 			speed := v2ray.TestV2rayPing(port)
+
+			time.Sleep(50 * time.Millisecond)
+
+			speed2 := v2ray.TestV2rayPing(port)
+
 			testResult[i] = speed
-			fmt.Printf("Config %d: %.0fms\n", i, testResult[i])
+			fmt.Printf("Config %d: %.0fms\n", i, speed)
+			fmt.Printf("Config %d: %.0fms\n\n", i, speed2)
+
+			if speed == 0 || speed2 < speed {
+				speed = speed2
+			}
+
 			mu.Unlock()
 
 			// Stop the V2Ray process
@@ -68,8 +79,10 @@ func RunTestV2RayProcesses() int {
 		}
 	}
 
-	fmt.Printf("\n🥇 Fastest speed: %.0fms", maxSpeed)
+	fmt.Printf("\n🥇 Fastest speed: %.0fms (Config %d)", maxSpeed, maxIndex)
 	fmt.Printf("\n-------------------------------\n\n")
+
+	time.Sleep(50 * time.Millisecond)
 
 	return maxIndex
 }

@@ -160,7 +160,7 @@ func handleInternetHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // StartProxyServer starts the proxy server on a specified address.
-func Start(address string) {
+func StartAppHttpProxy(address string) {
 
 	proxy := &http.Server{
 		Addr: address,
@@ -200,7 +200,7 @@ func Start(address string) {
 		}),
 	}
 
-	fmt.Println("✨ Starting proxy server on ", address)
+	fmt.Println("✨ Starting HTTP proxy server on ", address)
 	if err := proxy.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		fmt.Println("❌ Could not start proxy: ", err)
 	}
