@@ -46,18 +46,22 @@ func RunTestV2RayProcesses() int {
 			time.Sleep(100 * time.Millisecond)
 			// speed := v2ray.TestV2raySpeed(port)
 			speed := v2ray.TestV2rayPing(port)
+			speed2 := 0.0
 
-			time.Sleep(50 * time.Millisecond)
+			fmt.Printf("Config %d: %.0fms\n", i, speed)
 
-			speed2 := v2ray.TestV2rayPing(port)
+			if speed == 0.0 {
+				time.Sleep(50 * time.Millisecond)
+				speed2 = v2ray.TestV2rayPing(port)
+
+				fmt.Printf("Try Config %d: %.0fms\n\n", i, speed2)
+
+				if speed == 0 || speed2 < speed {
+					speed = speed2
+				}
+			}
 
 			testResult[i] = speed
-			fmt.Printf("Config %d: %.0fms\n", i, speed)
-			fmt.Printf("Config %d: %.0fms\n\n", i, speed2)
-
-			if speed == 0 || speed2 < speed {
-				speed = speed2
-			}
 
 			mu.Unlock()
 
