@@ -59,6 +59,8 @@ func RunTestV2RayProcesses() int {
 				if speed == 0 || speed2 < speed {
 					speed = speed2
 				}
+			} else {
+				fmt.Printf("\n")
 			}
 
 			testResult[i] = speed
