@@ -43,7 +43,7 @@ func RunTestV2RayProcesses() int {
 
 			// Test internet speed
 			mu.Lock()
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(50 * time.Millisecond)
 			// speed := v2ray.TestV2raySpeed(port)
 			speed := v2ray.TestV2rayPing(port)
 			speed2 := 0.0
@@ -51,7 +51,7 @@ func RunTestV2RayProcesses() int {
 			fmt.Printf("Config %d: %.0fms\n", i, speed)
 
 			if speed == 0.0 {
-				time.Sleep(50 * time.Millisecond)
+				time.Sleep(20 * time.Millisecond)
 				speed2 = v2ray.TestV2rayPing(port)
 
 				fmt.Printf("Try Config %d: %.0fms\n\n", i, speed2)
