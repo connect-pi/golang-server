@@ -2,20 +2,32 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"project/pakages/configs"
 	"project/pakages/proxy"
 	"project/pakages/proxy/rules"
 	"project/pakages/v2ray"
 	"project/pakages/v2ray/configsTest"
+	v2raycore "project/pakages/v2ray/core"
 )
 
 func init() {
+	// Download v2ray core
+	v2raycore.Load()
+
+	// Set core dir
+	rootPath, _ := os.Getwd()
+	v2ray.CoreDir = filepath.Join(rootPath, "v2ray-core")
+
+	// Create config files
 	err := configs.CreateFiles()
 	if err != nil {
 		fmt.Println("Create config files:", err)
 		return
 	}
 
+	// Load configs
 	err = configs.LoadSettings()
 	if err != nil {
 		fmt.Println("Load settings:", err)
@@ -47,12 +59,12 @@ func main() {
 
 	// Print GO
 	fmt.Println(`
-░▒▓██████▓▒░ ░▒▓██████▓▒░  
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒▒▓███▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓██████▓▒░ ░▒▓██████▓▒░
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒▒▓███▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
  ░▒▓██████▓▒░ ░▒▓██████▓▒░
  `)
 

@@ -27,4 +27,5 @@ go.work.sum
 # customs
 .configs/*
 .v2ray/*
+v2ray-core/*
 main

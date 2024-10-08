@@ -3,6 +3,7 @@ package v2ray
 import (
 	"fmt"
 	"os/exec"
+	"path/filepath"
 	"syscall"
 )
 
@@ -17,8 +18,12 @@ type V2RayProcess struct {
 
 // NewV2RayProcess creates a new V2Ray process with a given path
 func NewV2RayProcess(path string, port int) *V2RayProcess {
+	command := filepath.Join(CoreDir, "/v2ray")
+
+	fmt.Println(exec.Command(command, "run"))
+
 	return &V2RayProcess{
-		Cmd:    exec.Command("v2ray", "run"),
+		Cmd:    exec.Command(command, "run"),
 		StopCh: make(chan struct{}),
 		Path:   path,
 		Port:   port,
