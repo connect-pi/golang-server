@@ -20,7 +20,7 @@ type V2RayProcess struct {
 func NewV2RayProcess(path string, port int) *V2RayProcess {
 	command := filepath.Join(CoreDir, "/v2ray")
 
-	fmt.Println(exec.Command(command, "run"))
+	// fmt.Println(exec.Command(command, "run"))
 
 	return &V2RayProcess{
 		Cmd:    exec.Command(command, "run"),
