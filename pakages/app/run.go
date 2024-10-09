@@ -1,7 +1,8 @@
 package app
 
 import (
-	"project/pakages/clog"
+	"fmt"
+	"project/pakages/proxy"
 	"project/pakages/v2ray"
 	"project/pakages/v2ray/configsTest"
 )
@@ -17,7 +18,7 @@ func Start() {
 
 	// Load Subscription
 	if LoadSubscriptionErr := v2ray.LoadSubscription(); LoadSubscriptionErr != nil {
-		clog.Println(LoadSubscriptionErr)
+		fmt.Println(LoadSubscriptionErr)
 		return
 	}
 
@@ -26,7 +27,7 @@ func Start() {
 
 	// V2ray Connect
 	if connectErr := v2ray.Connect(bestConfigIndex); connectErr != nil {
-		clog.Println(connectErr)
+		fmt.Println(connectErr)
 		return
 	}
 
@@ -40,10 +41,11 @@ func Start() {
   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
    ░▒▓██████▓▒░ ░▒▓██████▓▒░
    `
-	clog.Println(goPint)
+	fmt.Println(goPint)
 	// Logger.Fatalln(goPint)
 
-	select {}
+	// Create proxy
+	proxy.StartAppSocks5Proxy()
 }
 
 func Stop() {

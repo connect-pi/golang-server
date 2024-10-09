@@ -23,7 +23,6 @@ func Connect(uriIndex int) error {
 		return runErr
 	}
 
-	fmt.Printf("Connect")
 	return nil
 }
 

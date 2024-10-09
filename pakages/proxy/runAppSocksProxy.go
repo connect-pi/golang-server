@@ -2,10 +2,10 @@ package proxy
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
-	"project/pakages/clog"
 	"project/pakages/v2ray"
 	"time"
 
@@ -35,12 +35,12 @@ func StartAppSocks5Proxy() {
 		startTime := time.Now()
 
 		// log.Println("Address: ", addr)
-		clog.Println(" ")
+		fmt.Println(" ")
 
 		// Check for open with VPN
 		v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
 		openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
-		clog.Println("vpn: ", openWithVpn)
+		fmt.Println("vpn: ", openWithVpn)
 
 		if openWithVpn {
 			// Forward traffic to the second proxy on port 2080
@@ -48,8 +48,8 @@ func StartAppSocks5Proxy() {
 
 			// End Time
 			elapsedTime := time.Since(startTime)
-			clog.Println("👾 Program run time: ", elapsedTime)
-			clog.Println(" ")
+			fmt.Println("👾 Program run time: ", elapsedTime)
+			fmt.Println(" ")
 
 			return dialer.Dial(network, addr)
 		}
@@ -59,8 +59,8 @@ func StartAppSocks5Proxy() {
 
 		// End Time
 		elapsedTime := time.Since(startTime)
-		clog.Println("👾 Program run time: ", elapsedTime)
-		clog.Println(" ")
+		fmt.Println("👾 Program run time: ", elapsedTime)
+		fmt.Println(" ")
 
 		return net.Dial(network, addr)
 	}
@@ -79,7 +79,7 @@ func StartAppSocks5Proxy() {
 	}()
 
 	// Log message after starting the proxy
-	clog.Println("✨ Starting SOCKS5 proxy server on :8000")
+	fmt.Println("✨ Starting SOCKS5 proxy server on :8000")
 
 	IsRun = true
 

@@ -1,12 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
-	"project/pakages/api"
-	"project/pakages/clog"
+	"project/pakages/app"
 	"project/pakages/configs"
-	"project/pakages/proxy"
 	"project/pakages/proxy/rules"
 	"project/pakages/v2ray"
 	v2raycore "project/pakages/v2ray/core"
@@ -20,21 +19,21 @@ func init() {
 	// Create config files
 	err := configs.CreateFiles()
 	if err != nil {
-		clog.Println("Create config files:", err)
+		fmt.Println("Create config files:", err)
 		return
 	}
 
 	// Load custom rules
 	err = rules.LoadCustomRules()
 	if err != nil {
-		clog.Println("Load settings:", err)
+		fmt.Println("Load settings:", err)
 		return
 	}
 
 	// Load settings
 	err = configs.LoadSettings()
 	if err != nil {
-		clog.Println("Load settings:", err)
+		fmt.Println("Load settings:", err)
 		return
 	}
 
@@ -44,7 +43,8 @@ func init() {
 
 func main() {
 	// Create proxy
-	go proxy.StartAppSocks5Proxy()
+	// go proxy.StartAppSocks5Proxy()
 
-	api.Register()
+	app.Start()
+
 }

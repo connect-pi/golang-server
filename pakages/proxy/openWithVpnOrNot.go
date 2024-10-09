@@ -1,7 +1,7 @@
 package proxy
 
 import (
-	"project/pakages/clog"
+	"fmt"
 	"project/pakages/common"
 	"project/pakages/proxy/rules"
 	"strings"
@@ -28,7 +28,7 @@ func SetCache(domain string, result bool) {
 
 // Check for open with VPN
 func OpenWithVpnOrNot(url string) bool {
-	clog.Println("domain: ", url)
+	fmt.Println("domain: ", url)
 
 	// Remove IPv6 port information if present
 	url = strings.Split(url, "]:")[0]
@@ -37,7 +37,7 @@ func OpenWithVpnOrNot(url string) bool {
 
 	// Convert IPv6 to IPv4 if necessary
 	if isIpv6 {
-		clog.Println("is Ipv6: ", url)
+		fmt.Println("is Ipv6: ", url)
 
 		// Is iran ipv6
 		// IsIranIpv6 := common.IsIranIpv6(url)
@@ -72,21 +72,21 @@ func OpenWithVpnOrNot(url string) bool {
 	if common.IsIPv4(url) {
 		// Ipv4
 		url = strings.Split(url, ":")[0]
-		clog.Println("Cleaned ipv4: ", url)
+		fmt.Println("Cleaned ipv4: ", url)
 	} else {
 		// Domain
 		url = strings.Replace(url, "http://", "", -1)
 		url = strings.Replace(url, "https://", "", -1)
 		url = strings.Split(url, "/")[0]
 		url = strings.Split(url, ":")[0]
-		clog.Println("Cleaned Domain: ", url)
+		fmt.Println("Cleaned Domain: ", url)
 	}
 
 	// Check the cache first
 	cache.mu.RLock()
 	if cachedResult, found := cache.domainCache[url]; found {
 		cache.mu.RUnlock()
-		clog.Println("Cache hit: ", cachedResult)
+		fmt.Println("Cache hit: ", cachedResult)
 		return cachedResult
 	}
 	cache.mu.RUnlock()
@@ -97,7 +97,7 @@ func OpenWithVpnOrNot(url string) bool {
 		// Apply domain-specific rules
 		rulesForDomain := rules.CheckRulesForDomain(url)
 		if rulesForDomain != nil {
-			clog.Println("Rules for domain found: ", *rulesForDomain)
+			fmt.Println("Rules for domain found: ", *rulesForDomain)
 			SetCache(url, *rulesForDomain)
 			return *rulesForDomain
 		}
@@ -111,7 +111,7 @@ func OpenWithVpnOrNot(url string) bool {
 		// Fetch the domain's IP address
 		thisIp, ipErr := common.GetDomainIp(url)
 		if ipErr != nil {
-			clog.Println("Error fetching IP: ", ipErr)
+			fmt.Println("Error fetching IP: ", ipErr)
 			SetCache(url, false)
 			return false
 		}
@@ -123,7 +123,7 @@ func OpenWithVpnOrNot(url string) bool {
 		// Apply IP-specific rules
 		rulesForIp := rules.CheckRulesForIp(url)
 		if rulesForIp != nil {
-			clog.Println("Rules for IP found: ", *rulesForIp)
+			fmt.Println("Rules for IP found: ", *rulesForIp)
 			SetCache(url, *rulesForIp)
 			return *rulesForIp
 		}
