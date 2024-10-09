@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"project/pakages/v2ray"
 	"time"
 
 	"github.com/things-go/go-socks5"
@@ -37,9 +38,8 @@ func StartAppSocks5Proxy() {
 		fmt.Println(" ")
 
 		// Check for open with VPN
-		// v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
-		// openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
-		openWithVpn := true
+		v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
+		openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
 		fmt.Println("vpn: ", openWithVpn)
 
 		if openWithVpn {
