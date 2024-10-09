@@ -37,45 +37,32 @@ func StartAppSocks5Proxy() {
 		fmt.Println(" ")
 
 		// Check for open with VPN
+		// v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
+		// openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
 		openWithVpn := true
 		fmt.Println("vpn: ", openWithVpn)
-
-		var conn net.Conn
-		var err error
 
 		if openWithVpn {
 			// Forward traffic to the second proxy on port 2080
 			// log.Printf("Forwarding traffic to %s via upstream proxy", addr)
 
-			// Attempt to resolve the address using Google DNS
-			resolver := &net.Resolver{
-				PreferGo: true,
-				Dial: func(ctx context.Context, network, addr string) (net.Conn, error) {
-					return net.Dial("udp", "1.1.1.1:53")
-				},
-			}
+			// End Time
+			elapsedTime := time.Since(startTime)
+			fmt.Println("👾 Program run time: ", elapsedTime)
+			fmt.Println(" ")
 
-			// Resolve the address
-			_, err = resolver.LookupHost(ctx, addr)
-			if err != nil {
-				log.Printf("Failed to resolve address %s: %v", addr, err)
-				return nil, err
-			}
-
-			conn, err = dialer.Dial(network, addr)
-		} else {
-			// Directly connect to the target address for all other traffic
-			// log.Printf("Connecting directly to %s", addr)
-
-			conn, err = net.Dial(network, addr)
+			return dialer.Dial(network, addr)
 		}
+
+		// Directly connect to the target address for all other traffic
+		// log.Printf("Connecting directly to %s", addr)
 
 		// End Time
 		elapsedTime := time.Since(startTime)
 		fmt.Println("👾 Program run time: ", elapsedTime)
 		fmt.Println(" ")
 
-		return conn, err
+		return net.Dial(network, addr)
 	}
 
 	// Create a SOCKS5 server with a custom dial function
