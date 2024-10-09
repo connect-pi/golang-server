@@ -33,6 +33,7 @@ func StartAppSocks5Proxy() {
 		// Start Time
 		startTime := time.Now()
 
+		// log.Println("Address: ", addr)
 		fmt.Println(" ")
 
 		// Check for open with VPN
@@ -43,10 +44,29 @@ func StartAppSocks5Proxy() {
 		var err error
 
 		if openWithVpn {
-			// Directly connect to the target address for all traffic
+			// Forward traffic to the second proxy on port 2080
+			// log.Printf("Forwarding traffic to %s via upstream proxy", addr)
+
+			// Attempt to resolve the address using Google DNS
+			resolver := &net.Resolver{
+				PreferGo: true,
+				Dial: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return net.Dial("udp", "1.1.1.1:53")
+				},
+			}
+
+			// Resolve the address
+			_, err = resolver.LookupHost(ctx, addr)
+			if err != nil {
+				log.Printf("Failed to resolve address %s: %v", addr, err)
+				return nil, err
+			}
+
 			conn, err = dialer.Dial(network, addr)
 		} else {
 			// Directly connect to the target address for all other traffic
+			// log.Printf("Connecting directly to %s", addr)
+
 			conn, err = net.Dial(network, addr)
 		}
 
