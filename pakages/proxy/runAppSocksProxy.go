@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/things-go/go-socks5"
@@ -33,36 +34,56 @@ func StartAppSocks5Proxy() {
 		// Start Time
 		startTime := time.Now()
 
-		// log.Println("Address: ", addr)
 		fmt.Println(" ")
 
 		// Check for open with VPN
-		// v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
-		// openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
 		openWithVpn := true
 		fmt.Println("vpn: ", openWithVpn)
 
+		var conn net.Conn
+		var err error
+
 		if openWithVpn {
 			// Forward traffic to the second proxy on port 2080
-			// log.Printf("Forwarding traffic to %s via upstream proxy", addr)
+			if strings.Contains(addr, ":") {
+				// Resolve only if addr is a domain name
+				// Split addr into host and port
+				host, port, err := net.SplitHostPort(addr)
+				if err != nil {
+					return nil, fmt.Errorf("failed to split host and port: %w", err)
+				}
 
-			// End Time
-			elapsedTime := time.Since(startTime)
-			fmt.Println("👾 Program run time: ", elapsedTime)
-			fmt.Println(" ")
+				// Attempt to resolve the address using Google DNS
+				resolver := &net.Resolver{
+					PreferGo: true,
+					Dial: func(ctx context.Context, network, addr string) (net.Conn, error) {
+						return net.Dial("udp", "8.8.8.8:53")
+					},
+				}
 
-			return dialer.Dial(network, addr)
+				// Resolve the host
+				_, err = resolver.LookupHost(ctx, host)
+				if err != nil {
+					log.Printf("Failed to resolve address %s: %v", host, err)
+					return nil, err
+				}
+
+				// Reconstruct addr
+				addr = fmt.Sprintf("%s:%s", host, port)
+			}
+
+			conn, err = dialer.Dial(network, addr)
+		} else {
+			// Directly connect to the target address for all other traffic
+			conn, err = net.Dial(network, addr)
 		}
-
-		// Directly connect to the target address for all other traffic
-		// log.Printf("Connecting directly to %s", addr)
 
 		// End Time
 		elapsedTime := time.Since(startTime)
 		fmt.Println("👾 Program run time: ", elapsedTime)
 		fmt.Println(" ")
 
-		return net.Dial(network, addr)
+		return conn, err
 	}
 
 	// Create a SOCKS5 server with a custom dial function
