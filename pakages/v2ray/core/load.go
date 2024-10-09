@@ -83,7 +83,7 @@ func Load() {
 	}
 
 	// Check if the v2ray-core directory exists
-	coreDir := "v2ray-core"
+	coreDir := ".v2ray-core"
 	if _, err := os.Stat(coreDir); os.IsNotExist(err) {
 		fmt.Printf("\nStarting download V2ray core process...\n")
 		err := os.MkdirAll(coreDir, os.ModePerm)
@@ -121,13 +121,13 @@ func Load() {
 
 func downloadFile(fileName, url string) error {
 	// Create v2ray-core directory if it doesn't exist
-	err := os.MkdirAll("v2ray-core", os.ModePerm)
+	err := os.MkdirAll(".v2ray-core", os.ModePerm)
 	if err != nil {
 		return err
 	}
 
 	// Update the file name to store in the v2ray-core directory
-	fileName = filepath.Join("v2ray-core", fileName)
+	fileName = filepath.Join(".v2ray-core", fileName)
 
 	// Create the file for storing
 	out, err := os.Create(fileName)
@@ -211,7 +211,7 @@ func downloadFile(fileName, url string) error {
 }
 
 func extractAndDelete(fileName string) error {
-	zipFile := filepath.Join("v2ray-core", fileName)
+	zipFile := filepath.Join(".v2ray-core", fileName)
 
 	// Open the zip file
 	r, err := zip.OpenReader(zipFile)
@@ -222,7 +222,7 @@ func extractAndDelete(fileName string) error {
 
 	// Create each file in the zip archive
 	for _, f := range r.File {
-		fpath := filepath.Join("v2ray-core", f.Name)
+		fpath := filepath.Join(".v2ray-core", f.Name)
 
 		if f.FileInfo().IsDir() {
 			// Create directories
@@ -267,8 +267,8 @@ func extractAndDelete(fileName string) error {
 	}
 
 	// Set executable permissions on the v2ray file
-	v2rayPath := filepath.Join("v2ray-core", "v2ray") // Make sure the filename matches
-	err = os.Chmod(v2rayPath, 0755)                   // Set permissions to rwxr-xr-x
+	v2rayPath := filepath.Join(".v2ray-core", "v2ray") // Make sure the filename matches
+	err = os.Chmod(v2rayPath, 0755)                    // Set permissions to rwxr-xr-x
 	if err != nil {
 		return fmt.Errorf("failed to set permissions: %v", err)
 	}

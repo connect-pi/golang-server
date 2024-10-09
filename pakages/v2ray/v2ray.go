@@ -24,6 +24,7 @@ func NewV2RayProcess(path string, port int) *V2RayProcess {
 
 	return &V2RayProcess{
 		Cmd:    exec.Command(command, "run"),
+		IsRun:  false,
 		StopCh: make(chan struct{}),
 		Path:   path,
 		Port:   port,
@@ -45,19 +46,8 @@ func (vp *V2RayProcess) Run(prints bool) error {
 		return fmt.Errorf("error starting command: %v", err)
 	}
 
-	// if test {
-	// 	time.Sleep(1 * time.Second)
-
-	// 	if TestV2rayProxy(vp.Port) {
-	// 		fmt.Println("✅ V2Ray started successfully.")
-	// 		vp.IsRun = true
-	// 	} else {
-	// 		vp.Stop()
-	// 		return fmt.Errorf("V2Ray did not start within the expected time")
-	// 	}
-	// } else {
-	// 	fmt.Println("✅ V2Ray started.")
-	// }
+	// Set IsRun to true after starting the command
+	vp.IsRun = true
 
 	if prints {
 		fmt.Println("✅ V2Ray started successfully.")
@@ -68,6 +58,7 @@ func (vp *V2RayProcess) Run(prints bool) error {
 
 // Stop V2Ray
 func (vp *V2RayProcess) Stop(prints bool) error {
+	fmt.Println("Stop V2RayProcess")
 	if vp.Cmd == nil || vp.Cmd.Process == nil {
 		return fmt.Errorf("no process to stop")
 	}

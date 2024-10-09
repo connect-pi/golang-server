@@ -8,12 +8,9 @@ import (
 
 // Connect
 func Connect(uriIndex int) error {
-	// if MainV2RayProcess.IsRun {
-	// 	// Stop
-	// 	if stopErr := MainV2RayProcess.Stop(); stopErr != nil {
-	// 		return stopErr
-	// 	}
-	// }
+	// Set core dir
+	rootPath, _ := os.Getwd()
+	CoreDir = filepath.Join(rootPath, ".v2ray-core")
 
 	// Select
 	if selectErr := selectUri(uriIndex); selectErr != nil {
@@ -26,6 +23,7 @@ func Connect(uriIndex int) error {
 		return runErr
 	}
 
+	fmt.Printf("Connect")
 	return nil
 }
 

@@ -6,13 +6,20 @@ import (
 	"log"
 	"net"
 	"os"
+	"project/pakages/v2ray"
 	"time"
 
 	"github.com/things-go/go-socks5"
 	"golang.org/x/net/proxy"
 )
 
+var IsRun bool = false
+
 func StartAppSocks5Proxy() {
+	if IsRun {
+		return
+	}
+
 	// Define the address of the downstream SOCKS5 proxy
 	upstreamProxyAddress := "127.0.0.1:2088"
 
@@ -32,8 +39,9 @@ func StartAppSocks5Proxy() {
 		// Check for open with VPN
 		openWithVpn := OpenWithVpnOrNot(addr)
 		fmt.Print("\nvpn: ", openWithVpn)
+		v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
 
-		if openWithVpn {
+		if openWithVpn && v2rayIsRun {
 			// Forward traffic to the second proxy on port 2080
 			// log.Printf("Forwarding traffic to %s via upstream proxy", addr)
 
@@ -69,6 +77,8 @@ func StartAppSocks5Proxy() {
 
 	// Log message after starting the proxy
 	fmt.Println("✨ Starting SOCKS5 proxy server on :8000")
+
+	IsRun = true
 
 	// Keep the main function running
 	select {}
