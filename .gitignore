@@ -29,4 +29,4 @@ go.work.sum
 .v2ray/*
 .v2ray-core/*
 main
-app.log
+clog

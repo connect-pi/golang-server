@@ -1,9 +1,12 @@
 package api
 
 import (
+	"encoding/json" // اضافه کردن پکیج json
 	"fmt"
 	"net/http"
 	"project/pakages/app"
+	"project/pakages/clog"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -18,19 +21,35 @@ var upgrader = websocket.Upgrader{
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println("Error while upgrading connection:", err)
+		clog.Println("Error while upgrading connection:", err)
 		return
 	}
 
-	fmt.Println("Client connected")
-
-	// SEND message every time
+	// ارسال پیام به صورت دوره‌ای
 	go func() {
 		for {
 			time.Sleep(500 * time.Millisecond)
-			err := conn.WriteMessage(websocket.TextMessage, []byte("{isRun:"+fmt.Sprint(app.IsRun())+", newLog: '-'}"))
+
+			// ساختار داده برای ارسال به کلاینت
+			data := struct {
+				IsRun  bool   `json:"isRun"`
+				NewLog string `json:"newLog"`
+			}{
+				IsRun:  app.IsRun(),
+				NewLog: strings.Join(clog.Logs, "\n"), // فرض کنید این متغیر شامل لاگ‌هاست
+			}
+
+			// تبدیل داده‌ها به JSON
+			jsonData, err := json.Marshal(data)
 			if err != nil {
-				fmt.Println("Error while writing message:", err)
+				clog.Println("Error marshaling JSON:", err)
+				break
+			}
+
+			// ارسال داده‌های JSON به کلاینت
+			err = conn.WriteMessage(websocket.TextMessage, jsonData)
+			if err != nil {
+				clog.Println("Error while writing message:", err)
 				break
 			}
 		}
@@ -39,16 +58,16 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	for {
 		messageType, msg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("Error while reading message:", err)
+			clog.Println("Error while reading message:", err)
 			break
 		}
 
 		// GET
 		if string(msg) == "start" { // START
-			fmt.Println("-- START --")
+			clog.Println("-- START --")
 			go app.Start()
 		} else if string(msg) == "stop" { // STOP
-			fmt.Println("-- STOP --")
+			clog.Println("-- STOP --")
 			app.Stop()
 		}
 
@@ -57,7 +76,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 		// SEND
 		err = conn.WriteMessage(messageType, msg)
 		if err != nil {
-			fmt.Println("Error while writing message:", err)
+			clog.Println("Error while writing message:", err)
 			break
 		}
 	}
@@ -65,13 +84,18 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	conn.Close()
 }
 
+func handleAdmin(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/admin.html")
+}
+
 func Register() {
 	http.HandleFunc("/ws", handleConnection)
-	fmt.Println("Server started on :8080")
+	http.HandleFunc("/admin", handleAdmin)
+	clog.Println("✨ Admin server started on 0.0.0.0:8080")
 
 	err := http.ListenAndServe(":8080", nil)
 
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		clog.Println("Error starting server:", err)
 	}
 }

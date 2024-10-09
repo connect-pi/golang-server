@@ -1,45 +1,10 @@
 package app
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"project/pakages/configs"
-	"project/pakages/proxy"
-	"project/pakages/proxy/rules"
+	"project/pakages/clog"
 	"project/pakages/v2ray"
-	v2raycore "project/pakages/v2ray/core"
+	"project/pakages/v2ray/configsTest"
 )
-
-func initApp() {
-
-	// Download v2ray core
-	v2raycore.Load()
-
-	// Set core dir
-	rootPath, _ := os.Getwd()
-	v2ray.CoreDir = filepath.Join(rootPath, ".v2ray-core")
-
-	// Create config files
-	err := configs.CreateFiles()
-	if err != nil {
-		fmt.Println("Create config files:", err)
-		return
-	}
-
-	// Load configs
-	err = configs.LoadSettings()
-	if err != nil {
-		fmt.Println("Load settings:", err)
-		return
-	}
-
-	err = rules.LoadCustomRules()
-	if err != nil {
-		fmt.Println("Load settings:", err)
-		return
-	}
-}
 
 func IsRun() bool {
 	return v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
@@ -50,32 +15,23 @@ func Start() {
 		return
 	}
 
-	// initApp()
-
-	// Create proxy
-	go proxy.StartAppSocks5Proxy()
-
 	// Load Subscription
-	// if LoadSubscriptionErr := v2ray.LoadSubscription(); LoadSubscriptionErr != nil {
-	// 	fmt.Println(LoadSubscriptionErr)
-	// 	return
-	// }
+	if LoadSubscriptionErr := v2ray.LoadSubscription(); LoadSubscriptionErr != nil {
+		clog.Println(LoadSubscriptionErr)
+		return
+	}
 
-	// // Find best config
-	// bestConfigIndex := configsTest.Run()
+	// Find best config
+	bestConfigIndex := configsTest.Run()
 
 	// V2ray Connect
-	// if connectErr := v2ray.Connect(bestConfigIndex); connectErr != nil {
-	// 	fmt.Println(connectErr)
-	// 	return
-	// }
-	if connectErr := v2ray.Connect(0); connectErr != nil {
-		fmt.Println(connectErr)
+	if connectErr := v2ray.Connect(bestConfigIndex); connectErr != nil {
+		clog.Println(connectErr)
 		return
 	}
 
 	// Print GO
-	fmt.Println(`
+	goPint := `
   ░▒▓██████▓▒░ ░▒▓██████▓▒░
   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
   ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░
@@ -83,12 +39,10 @@ func Start() {
   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
   ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
    ░▒▓██████▓▒░ ░▒▓██████▓▒░
-   `)
+   `
+	clog.Println(goPint)
+	// Logger.Fatalln(goPint)
 
-	// Proxy server should keep running
-	// for {
-	// 	time.Sleep(1 * time.Second)
-	// }
 	select {}
 }
 

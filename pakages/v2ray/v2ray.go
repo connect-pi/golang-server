@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"project/pakages/clog"
 	"syscall"
 )
 
@@ -20,7 +21,7 @@ type V2RayProcess struct {
 func NewV2RayProcess(path string, port int) *V2RayProcess {
 	command := filepath.Join(CoreDir, "/v2ray")
 
-	// fmt.Println(exec.Command(command, "run"))
+	// clog.Println(exec.Command(command, "run"))
 
 	return &V2RayProcess{
 		Cmd:    exec.Command(command, "run"),
@@ -34,7 +35,7 @@ func NewV2RayProcess(path string, port int) *V2RayProcess {
 // Run V2Ray
 func (vp *V2RayProcess) Run(prints bool) error {
 	if prints {
-		fmt.Println("Start V2Ray...")
+		clog.Println("Start V2Ray...")
 
 	}
 
@@ -50,7 +51,7 @@ func (vp *V2RayProcess) Run(prints bool) error {
 	vp.IsRun = true
 
 	if prints {
-		fmt.Println("✅ V2Ray started successfully.")
+		clog.Println("✅ V2Ray started successfully.")
 	}
 
 	return nil
@@ -58,7 +59,6 @@ func (vp *V2RayProcess) Run(prints bool) error {
 
 // Stop V2Ray
 func (vp *V2RayProcess) Stop(prints bool) error {
-	fmt.Println("Stop V2RayProcess")
 	if vp.Cmd == nil || vp.Cmd.Process == nil {
 		return fmt.Errorf("no process to stop")
 	}
@@ -85,7 +85,7 @@ func (vp *V2RayProcess) Stop(prints bool) error {
 
 	vp.IsRun = false
 	if prints {
-		fmt.Println("💤 V2Ray stopped.")
+		clog.Println("💤 V2Ray stopped.")
 	}
 	return nil
 }

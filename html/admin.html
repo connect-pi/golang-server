@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Logging</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e2f;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #282a36;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        #logs {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #44475a;
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #6272a4;
+            border-radius: 4px;
+            line-height: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        #startBtn {
+            background-color: #2a9745;
+            color: #fff;
+        }
+        #stopBtn {
+            background-color: #bb4e4e;
+            color: #fff;
+        }
+        button:disabled {
+            opacity: 50%;
+            background-color: #6272a4;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Logging</h1>
+        <button id="startBtn">Start Process</button>
+        <button id="stopBtn" disabled>Stop Process</button>
+
+        <div id="logs"></div>
+    </div>
+
+    <script>
+        let socket = new WebSocket("ws://localhost:8080/ws");
+
+        const startBtn = document.getElementById("startBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const logsDiv = document.getElementById("logs");
+
+        socket.onopen = function() {
+            logsDiv.innerHTML += "<p>Connected to server</p>";
+        };
+
+        socket.onmessage = function(event) {
+            console.log(event);
+            const data = JSON.parse(event.data); // Parse the JSON data
+            
+            // Display the new log content
+            if (data.newLog) {
+                logsDiv.innerText = data.newLog; // Append the new log
+                logsDiv.scrollTop = logsDiv.scrollHeight; // Scroll to bottom
+            }
+
+            // Update button states based on isRun status
+            if (data.isRun) {
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        };
+
+        startBtn.addEventListener("click", () => {
+            socket.send("start");
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        });
+
+        stopBtn.addEventListener("click", () => {
+            socket.send("stop");
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

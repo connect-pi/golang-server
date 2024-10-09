@@ -76,9 +76,9 @@ func TestV2raySpeed(proxyPort int) float64 {
 	}
 
 	// Calculate speed if the loop ends naturally
-	duration := time.Since(start)
-	speedMbps := float64(totalBytesRead*8) / duration.Seconds() / 1_000_000 // speed in Mbps
+	// duration := time.Since(start)
+	// speedMbps := float64(totalBytesRead*8) / duration.Seconds() / 1_000_000 // speed in Mbps
 
 	// return speedMbps, nil
-	return speedMbps
+	// return speedMbps
 }
