@@ -38,11 +38,11 @@ func StartAppSocks5Proxy() {
 		clog.Println(" ")
 
 		// Check for open with VPN
-		openWithVpn := OpenWithVpnOrNot(addr)
-		clog.Println("vpn: ", openWithVpn)
 		v2rayIsRun := v2ray.MainV2RayProcess != nil && v2ray.MainV2RayProcess.IsRun
+		openWithVpn := v2rayIsRun && OpenWithVpnOrNot(addr)
+		clog.Println("vpn: ", openWithVpn)
 
-		if openWithVpn && v2rayIsRun {
+		if openWithVpn {
 			// Forward traffic to the second proxy on port 2080
 			// log.Printf("Forwarding traffic to %s via upstream proxy", addr)
 

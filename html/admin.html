@@ -80,7 +80,6 @@
         };
 
         socket.onmessage = function(event) {
-            console.log(event);
             const data = JSON.parse(event.data); // Parse the JSON data
             
             // Display the new log content

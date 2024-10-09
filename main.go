@@ -13,9 +13,6 @@ import (
 )
 
 func init() {
-	// Start save logs
-	clog.StartSaveLogs()
-
 	// Set core dir
 	rootPath, _ := os.Getwd()
 	v2ray.CoreDir = filepath.Join(rootPath, ".v2ray-core")
