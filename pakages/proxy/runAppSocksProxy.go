@@ -20,7 +20,7 @@ func StartAppSocks5Proxy() {
 	}
 
 	// Define the address of the downstream SOCKS5 proxy
-	upstreamProxyAddress := "127.0.0.1:2088"
+	upstreamProxyAddress := "0.0.0.0:2088"
 
 	// Create a SOCKS5 dialer to connect to the upstream proxy
 	dialer, err := proxy.SOCKS5("tcp", upstreamProxyAddress, nil, proxy.Direct)
