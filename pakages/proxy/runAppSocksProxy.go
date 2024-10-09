@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/things-go/go-socks5"
@@ -44,34 +43,7 @@ func StartAppSocks5Proxy() {
 		var err error
 
 		if openWithVpn {
-			// Forward traffic to the second proxy on port 2080
-			if strings.Contains(addr, ":") {
-				// Resolve only if addr is a domain name
-				// Split addr into host and port
-				host, port, err := net.SplitHostPort(addr)
-				if err != nil {
-					return nil, fmt.Errorf("failed to split host and port: %w", err)
-				}
-
-				// Attempt to resolve the address using Google DNS
-				resolver := &net.Resolver{
-					PreferGo: true,
-					Dial: func(ctx context.Context, network, addr string) (net.Conn, error) {
-						return net.Dial("udp", "8.8.8.8:53")
-					},
-				}
-
-				// Resolve the host
-				_, err = resolver.LookupHost(ctx, host)
-				if err != nil {
-					log.Printf("Failed to resolve address %s: %v", host, err)
-					return nil, err
-				}
-
-				// Reconstruct addr
-				addr = fmt.Sprintf("%s:%s", host, port)
-			}
-
+			// Directly connect to the target address for all traffic
 			conn, err = dialer.Dial(network, addr)
 		} else {
 			// Directly connect to the target address for all other traffic
