@@ -15,9 +15,9 @@ func IsLocalIP(ipString string) bool {
 	}
 
 	// Check if the IP is a private address (for IPv4 and IPv6)
-	if ip.IsPrivate() {
-		return true
-	}
+	// if ip.IsPrivate() {
+	// 	return true
+	// }
 
 	// Redundant check for loopback addresses (already checked above)
 	if ip.IsLoopback() {
