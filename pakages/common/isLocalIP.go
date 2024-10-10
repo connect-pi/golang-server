@@ -7,6 +7,10 @@ func IsLocalIP(ipString string) bool {
 		return true
 	}
 
+	if ipString == "10.10.34.35" {
+		return false
+	}
+
 	ip := net.ParseIP(ipString)
 
 	// Check if the IP is a loopback address (localhost)
